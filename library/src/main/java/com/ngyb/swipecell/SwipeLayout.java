@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -21,6 +22,7 @@ public class SwipeLayout extends FrameLayout {
     ViewDragHelper dragHelper;
     float downX, downY;
     OnSwipeListener listener;
+    private static final String TAG = "SwipeLayout";
 
     public SwipeLayout(@NonNull Context context) {
         this(context, null);
@@ -65,9 +67,9 @@ public class SwipeLayout extends FrameLayout {
             case MotionEvent.ACTION_MOVE:
                 //通过判断用户手指滑动的方向来猜测到底是要滑动listview还是swipLayout
                 //如果是偏向于垂直，就是滑动listview，如果偏向于水平，就是滑动swipLayout
-                float dx  = event.getX()-downX;
+                float dx = event.getX() - downX;
                 float dy = event.getY() - downY;
-                if (Math.abs(dx) > Math.abs(dy)){
+                if (Math.abs(dx) > Math.abs(dy)) {
                     requestDisallowInterceptTouchEvent(true);
                 }
                 break;
@@ -101,16 +103,16 @@ public class SwipeLayout extends FrameLayout {
 
         @Override
         public int clampViewPositionHorizontal(@NonNull View child, int left, int dx) {
-            if (child == content){
-                if (left > 0){
+            if (child == content) {
+                if (left > 0) {
                     left = 0;
-                }else if (left < -delete.getMeasuredWidth()){
+                } else if (left < -delete.getMeasuredWidth()) {
                     left = -delete.getMeasuredWidth();
                 }
-            }else if (child ==delete){
-                if (left < content.getMeasuredWidth()-delete.getMeasuredWidth()){
-                    left = content.getMeasuredWidth()-delete.getMeasuredWidth();
-                }else if (left > content.getMeasuredWidth()){
+            } else if (child == delete) {
+                if (left < content.getMeasuredWidth() - delete.getMeasuredWidth()) {
+                    left = content.getMeasuredWidth() - delete.getMeasuredWidth();
+                } else if (left > content.getMeasuredWidth()) {
                     left = content.getMeasuredWidth();
                 }
             }
@@ -120,15 +122,15 @@ public class SwipeLayout extends FrameLayout {
         @Override
         public void onViewPositionChanged(@NonNull View changedView, int left, int top, int dx, int dy) {
             super.onViewPositionChanged(changedView, left, top, dx, dy);
-            if (changedView ==content){
+            if (changedView == content) {
                 delete.offsetLeftAndRight(dx);
-            }else if (changedView == delete){
+            } else if (changedView == delete) {
                 content.offsetLeftAndRight(dx);
             }
-            if (listener!=null){
-                if (-content.getLeft() == delete.getMeasuredWidth()){
+            if (listener != null) {
+                if (-content.getLeft() == delete.getMeasuredWidth()) {
                     listener.onOpen(SwipeLayout.this);
-                }else if (content.getLeft() ==0){
+                } else if (content.getLeft() == 0) {
                     listener.onClose(SwipeLayout.this);
                 }
             }
@@ -137,35 +139,37 @@ public class SwipeLayout extends FrameLayout {
         @Override
         public void onViewReleased(@NonNull View releasedChild, float xvel, float yvel) {
             super.onViewReleased(releasedChild, xvel, yvel);
-            if (content.getLeft() <-delete.getMeasuredWidth()/3){
+            Log.e(TAG, "onViewReleased: " + content.getLeft() + "====" + content.getRight());
+            Log.e(TAG, "onViewReleased: " + delete.getMeasuredWidth());
+            if (content.getLeft() < -delete.getMeasuredWidth() / 3) {
                 //open
                 open();
-            }else{
+            } else {
                 //close
                 close();
             }
         }
     };
 
-    private void close() {
-        dragHelper.smoothSlideViewTo(content,0,0);
+    public void close() {
+        dragHelper.smoothSlideViewTo(content, 0, 0);
         ViewCompat.postInvalidateOnAnimation(SwipeLayout.this);
     }
 
     private void open() {
-        dragHelper.smoothSlideViewTo(content,-delete.getMeasuredWidth(),0);
+        dragHelper.smoothSlideViewTo(content, -delete.getMeasuredWidth(), 0);
         ViewCompat.postInvalidateOnAnimation(SwipeLayout.this);
     }
 
     @Override
     public void computeScroll() {
         super.computeScroll();
-        if (dragHelper.continueSettling(true)){
+        if (dragHelper.continueSettling(true)) {
             ViewCompat.postInvalidateOnAnimation(SwipeLayout.this);
         }
     }
 
-    public interface OnSwipeListener{
+    public interface OnSwipeListener {
         void onOpen(SwipeLayout openLayout);
 
         void onClose(SwipeLayout closeLayout);

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/dp_80"
+    android:orientation="horizontal">
+
+    <TextView
+        android:layout_width="@dimen/dp_100"
+        android:layout_height="match_parent"
+        android:background="#aa000000"
+        android:gravity="center"
+        android:text="Call"
+        android:textColor="#ffffff"
+        android:textSize="@dimen/sp_18"/>
+
+    <TextView
+        android:id="@+id/tv_delete"
+        android:layout_width="@dimen/dp_100"
+        android:layout_height="match_parent"
+        android:background="#eeff0000"
+        android:gravity="center"
+        android:text="Delete"
+        android:textColor="#ffffff"
+        android:textSize="@dimen/sp_18"/>
+</LinearLayout>
